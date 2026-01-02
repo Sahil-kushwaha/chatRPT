@@ -1,24 +1,14 @@
 @import "tailwindcss";
+
+@theme {
+  --color-text-light:#09090b;
+  --color-text-dark:#fafafa ;
+  --color-background-light:#fafafa ;
+  --color-background-dark:#262626 ;  
+}
+
 *{
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
-}
-
-:root {
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
- 
-}
-
-body {
-  /* display: flex; */
-  /* place-items: center; */
-  min-width: 320px;
-  min-height: 100vh;
-  border:2px red solid
 }
 
 h1 {
@@ -26,10 +16,3 @@ h1 {
   line-height: 1.1;
 }
 
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-}
