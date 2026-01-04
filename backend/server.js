@@ -17,14 +17,14 @@ app.use((req,res,next)=>{
 
 app.post('/chat', async (req,res)=>{
   try {
-      const {message ,threadId} = req.body
+      const {message ,threadId,selectedTools} = req.body
       if(!message.trim() || !threadId) {
            res
            .status(400)
            .json({status:400,message:"All fields required"})
       }
   
-      const llmResponse = await generator(message,threadId)
+      const llmResponse = await generator(message,threadId ,selectedTools)
       res
       .status(200)
       .json({status:200,data:llmResponse,message:"LLM generate response successfully"})

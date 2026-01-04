@@ -15,7 +15,8 @@ async function webSearch({ query }) {
   return finalResult;
 }
 
-async function generator(useInput, threadId) {
+async function generator(useInput, threadId,selectedTools) {
+
   try {
     const baseMessage = [
       {
@@ -63,7 +64,7 @@ async function generator(useInput, threadId) {
             },
           },
         ],
-        tool_choice: "auto",
+        tool_choice: selectedTools?.WebSearch?"required":"auto",
       });
       // push assistance message
       message.push(response.choices[0].message);
