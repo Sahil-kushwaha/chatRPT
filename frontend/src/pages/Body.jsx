@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
-import {Check, Copy, SendHorizontal} from "lucide-react"
+import {Check, CircleMinus, CirclePlus, Copy, Globe, SendHorizontal, X} from "lucide-react"
 
 function Body() {
   
@@ -10,13 +10,16 @@ function Body() {
   const [isAssistanceContentCopyToClipboard ,setIsAssistanceContentCopyToClipboard] = useState({})
   const [isUserContentCopyToClipboard ,setIsUserContentCopyToClipboard] = useState({})
   const [isUserContentHover ,setIsUserContentHover] = useState({})
+  const [selectedTools,setSelectedTool] = useState({})
+  const [isToolDialogToggle,setIsToolDialogToggle] = useState(false)
+
   const scrollRef = useRef(null)
   const threadId = useRef(null)
 
  useEffect(()=>{
    threadId.current = Date.now().toString(36)+Math.random().toString(36).substring(2,9) 
  },[])
-
+  
   const generate = async(text)=>{
     // show userInput on UI
    try {
@@ -38,7 +41,7 @@ function Body() {
           "Content-Type":"application/json"
          },
          signal:abtCtrl.signal,
-         body:JSON.stringify({threadId:threadId.current,message:text})
+         body:JSON.stringify({threadId:threadId.current,message:text,selectedTools:selectedTools})
        }
        )
        clearTimeout(reqTimeout)
@@ -83,10 +86,17 @@ function Body() {
   const handleMouseHover =(index)=>{
       setIsUserContentHover(prev=>({...prev,[index]:true}))
     }
-    const handleMouseLeave =(index)=>{
+  const handleMouseLeave =(index)=>{
       setTimeout(()=>{
         setIsUserContentHover(prev=>({...prev,[index]:false}))        
       },3000)
+  }
+
+  const handleToolSelection =(e)=>{
+       const tool = e.target.dataset?.toolName
+       if(!tool) return
+       setSelectedTool(prev=>({...prev ,[tool]:true}))
+       setIsToolDialogToggle(prev=>!prev)
   }
   return (
     <div className="dark:bg-background-dark dark:text-text-dark bg-background-light  text-text-light min-h-screen">
@@ -141,7 +151,25 @@ function Body() {
                    onKeyUp={e=>handleEnter(e)} 
                    ></textarea>
                   <div className="flex justify-between">
-                    <button className="ml-2 cursor-pointer text-3xl font-light">+</button>
+                    <button 
+                    className="ml-2 cursor-pointer hover:opacity-80 text-3xl font-light" 
+                    onClick={()=>setIsToolDialogToggle(prev=>!prev)}
+                    >{isToolDialogToggle?<CircleMinus />:<CirclePlus />}</button>
+                    {/* dailog for all available tools */}
+                   { isToolDialogToggle && <div aria-label="tool-selection-dialog" 
+                        className="absolute z-10  -top-14 rounded-xl p-4 bg-neutral-300 dark:bg-neutral-900"
+                        onClick={(e)=>handleToolSelection(e)}
+                    >
+                       <p className="flex gap-x-2 cursor-pointer hover:bg-neutral-800 p-2 rounded-xl" data-tool-name="WebSearch"><span><Globe /></span> <span data-tool-name="WebSearch">Web Search</span> </p>
+                    </div>}
+                    {/* show selected tool on UI */}
+                    <div className=""> 
+                      {Object.entries(selectedTools).map((tool,index)=>{
+                      if(tool[1]){
+                         return (<div key={index} className="flex gap-x-0.5 text-blue-400"><Globe color="#257dd0"/>{tool[0]}<span onClick={()=>setSelectedTool(prev=>({...prev ,[tool[0]]:!tool[0]}))} className="cursor-pointer"><X color="#d02525" strokeWidth={2.25} /></span></div>)
+                      }
+                    })}
+                    </div>
                     <button 
                     className="mr-2 mb-2 bg-neutral-800 dark:bg-neutral-100 text-neutral-100 hover:opacity-80 cursor-pointer dark:text-neutral-900 self-end px-4 py-1 text-2xl   rounded-full"
                     onClick={handleSendBtn}
